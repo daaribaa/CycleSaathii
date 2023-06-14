@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -17,6 +18,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -26,6 +29,7 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
+import java.io.File;
 import java.util.List;
 
 public class OsmMapActivity extends AppCompatActivity implements LocationListener {
@@ -42,6 +46,7 @@ public class OsmMapActivity extends AppCompatActivity implements LocationListene
     private LocationListener locationListener;
     MyLocationNewOverlay mLocationOverlay;
 
+    Button stopBtn;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,6 +54,14 @@ public class OsmMapActivity extends AppCompatActivity implements LocationListene
         setContentView(R.layout.activity_osm_map);
 
         //handle permissions first, before map is created. not depicted here
+
+        File directory = new File("/storage/emulated/0/osmdroid/tiles");
+        if (!directory.exists()) {
+            boolean success = directory.mkdirs();
+            if (!success) {
+                // Directory creation failed, handle the error
+            }
+        }
 
 
         //load/initialize the osmdroid configuration, this can be done
@@ -75,6 +88,16 @@ public class OsmMapActivity extends AppCompatActivity implements LocationListene
         mapController.setZoom(20);
         GeoPoint startPoint = new GeoPoint(27.6940685,85.2780092);
         mapController.setCenter(startPoint);
+
+
+        stopBtn = findViewById(R.id.stopBtn);
+        stopBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent in = new Intent(OsmMapActivity.this, DetailsActivity.class);
+                startActivity(in);
+            }
+        });
 
         /*this.mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(OsmMapActivity.this),map);
         this.mLocationOverlay.enableMyLocation();

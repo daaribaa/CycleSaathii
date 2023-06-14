@@ -29,7 +29,7 @@ public class LoginPageActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String uname = uNameET.getText().toString();
                 String pass = passWordET.getText().toString();
-                Toast.makeText(LoginPageActivity.this, "Username = " + uname + " Password = "+ pass, Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginPageActivity.this, "Username = " + uname + " Password = "+ pass, Toast.LENGTH_LONG).show();
                 //VALIDATION BAKKI
                 Intent intent = new Intent(LoginPageActivity.this, HomePageActivity.class);
                 startActivity(intent);

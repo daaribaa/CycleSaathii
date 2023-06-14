@@ -13,5 +13,84 @@
         android:src="@drawable/cs"
         android:layout_gravity="center"/>
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/nameau"
+            android:layout_margin="10dp"
+            android:text="App Name:"
+            android:textSize="30dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/apname"
+            android:layout_margin="10dp"
+            android:text="Cycle Saathi"
+            android:textSize="25dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/dateau"
+            android:layout_margin="10dp"
+            android:text="Made on:"
+            android:textSize="30dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/apdate"
+            android:layout_margin="10dp"
+            android:text="2023-06-15"
+            android:textSize="25dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/createrau"
+            android:layout_margin="10dp"
+            android:text="Made by:"
+            android:textSize="30dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/apcreater"
+            android:layout_margin="10dp"
+            android:text="Jenish Maharjan"
+            android:textSize="25dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/langau"
+            android:layout_margin="10dp"
+            android:text="Language used:"
+            android:textSize="30dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/aplang"
+            android:layout_margin="10dp"
+            android:text="Java"
+            android:textSize="25dp"/>
+
+    </LinearLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/backHome"
+        android:layout_gravity="center"
+        android:layout_margin="20dp"
+        android:text="HomePage"/>
+
 
 </LinearLayout>
