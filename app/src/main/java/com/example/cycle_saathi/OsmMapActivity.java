@@ -9,12 +9,12 @@ import android.Manifest;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.overlay.Marker;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -24,29 +24,31 @@ import android.widget.Button;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
-import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class OsmMapActivity extends AppCompatActivity implements LocationListener {
 
     private MapView map;
     private IMapController mapController;
-
-    private static final String TAG = "OsmActivity";
-
-
+    private static final String TAG = "LatLong";
     private static final int PERMISSION_REQUEST_CODE = 1;
-
     private LocationManager locationManager;
     private LocationListener locationListener;
     MyLocationNewOverlay mLocationOverlay;
-
     Button stopBtn;
+
+    private Timer locationTimer;
+    private TimerTask locationTask;
+
+
+    public List<double[]> coordinates = new ArrayList<>();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,17 +69,7 @@ public class OsmMapActivity extends AppCompatActivity implements LocationListene
         //load/initialize the osmdroid configuration, this can be done
         Context ctx = getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
-        //setting this before the layout is inflated is a good idea
-        //it 'should' ensure that the map has a writable location for the map cache, even without permissions
-        //if no tiles are displayed, you can try overriding the cache path using Configuration.getInstance().setCachePath
-        //see also StorageUtils
-        //note, the load method also sets the HTTP User Agent to your application's package name, abusing osm's tile servers will get you banned based on this string
 
-        /*  if (BuildConfig.VERSION.SDK_INT >= 23) {
-            if (isStoragePermissionGranted()){
-
-            }
-        }*/
 
         //inflate and create the map
         map = findViewById(R.id.mapView);
@@ -86,8 +78,6 @@ public class OsmMapActivity extends AppCompatActivity implements LocationListene
         map.setMultiTouchControls(true);
         mapController = map.getController();
         mapController.setZoom(20);
-        GeoPoint startPoint = new GeoPoint(27.6940685,85.2780092);
-        mapController.setCenter(startPoint);
 
 
         stopBtn = findViewById(R.id.stopBtn);
@@ -95,13 +85,11 @@ public class OsmMapActivity extends AppCompatActivity implements LocationListene
             @Override
             public void onClick(View view) {
                 Intent in = new Intent(OsmMapActivity.this, DetailsActivity.class);
+                in.putExtra("coordinatesList", coordinates.toArray(new double[0][]));
                 startActivity(in);
             }
         });
 
-        /*this.mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(OsmMapActivity.this),map);
-        this.mLocationOverlay.enableMyLocation();
-        map.getOverlays().add(this.mLocationOverlay);*/
 
         // Check if location permission is granted
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -121,6 +109,7 @@ public class OsmMapActivity extends AppCompatActivity implements LocationListene
 
     }
 
+
     private void initializeLocationManager() {
         if (locationManager != null) {
             // Check if location permission is granted
@@ -139,13 +128,35 @@ public class OsmMapActivity extends AppCompatActivity implements LocationListene
     }
 
     private void startLocationUpdates() {
-        try {
-            // Request location updates with a desired time and distance interval
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, this);
-        } catch (SecurityException e) {
-            e.printStackTrace();
-        }
+        locationTimer = new Timer();
+        locationTask = new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    if (lastKnownLocation != null) {
+                        // Get the latitude and longitude from the last known location
+                        double latitude = lastKnownLocation.getLatitude();
+                        double longitude = lastKnownLocation.getLongitude();
+
+                        coordinates.add(new double[]{latitude,longitude});
+
+                        // Print the latitude and longitude in the logcat
+                        Log.d(TAG, "Latitude: " + latitude + ", Longitude: " + longitude);
+
+                        // Use the obtained latitude and longitude here
+                        // Update the map view or perform other actions based on the current location
+                    }
+                } catch (SecurityException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        // Schedule the location updates every 2 seconds
+        locationTimer.scheduleAtFixedRate(locationTask, 0, 2000);
     }
+
 
     public void onResume() {
         super.onResume();
@@ -154,38 +165,36 @@ public class OsmMapActivity extends AppCompatActivity implements LocationListene
 
     }
 
-
     public void onPause() {
         super.onPause();
         locationManager.removeUpdates(this);
-    }
 
-
-    /*public boolean isStoragePermissionGranted() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    == PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
-                Log.v(TAG, "Permission is granted");
-                return true;
-            } else {
-
-                Log.v(TAG, "Permission is revoked");
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-                return false;
-            }
-        } else { //permission is automatically granted on sdk<23 upon installation
-            Log.v(TAG, "Permission is granted");
-            return true;
+        // Cancel the location updates
+        if (locationTimer != null) {
+            locationTimer.cancel();
+            locationTimer = null;
         }
-    }*/
+        if (locationTask != null) {
+            locationTask.cancel();
+            locationTask = null;
+        }
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            Log.v(TAG, "Permission: " + permissions[0] + "was " + grantResults[0]);
-            //resume tasks needing this permission
+
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Location permission granted, start location updates
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, this);
+                }
+            } else {
+                // Location permission denied, handle accordingly
+                // You can display a message or take alternative actions
+            }
         }
     }
 
@@ -196,10 +205,21 @@ public class OsmMapActivity extends AppCompatActivity implements LocationListene
         // Handle the updated location here
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
-        Log.println(Log.ERROR,"msg","latitude = "+latitude);
-        Log.println(Log.ERROR,"msg","Longitude = "+longitude);
 
+        coordinates.add(new double[]{latitude,longitude});
+
+        Log.d(TAG, coordinates.toString());
         // Use the obtained latitude and longitude to update the map view or perform other actions
+
+
+        // Create a new marker with the updated location
+        Marker marker = new Marker(map);
+        marker.setPosition(new GeoPoint(latitude, longitude));
+        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+        map.getOverlays().add(marker);
+
+        // Refresh the map view to display the marker
+        map.invalidate();
     }
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {

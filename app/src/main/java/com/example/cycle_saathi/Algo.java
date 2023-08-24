@@ -8,15 +8,7 @@ import java.util.List;
 
 public class Algo {
 
-    Context context;
-
-    /*public static void main(String[] args) {
-       Algo al = new Algo();
-       al.mainWork();
-    }*/
-
     public void mainWork(Context context){
-        //String geoJSON = "{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"Point\",\"coordinates\":[40.7128, -74.0060]}}";
         List<double[]> coordinates = new ArrayList<>();
         coordinates.add(new double[]{37.7749, -122.4194});
         coordinates.add(new double[]{37.7833, -122.4167});
@@ -86,8 +78,8 @@ public class Algo {
 
         double totalDistance = calculateTotalDistance(coordinates);
         double totalTime = calcTime(coordinates);
-        /*System.out.println("Total Distance: " + totalDistance + " km");
-        System.out.println("Total Time: "+ totalTime + "min");*/
+        System.out.println("Total Distance: " + totalDistance + " km");
+        System.out.println("Total Time: "+ totalTime + "min");
 
         Intent intent = new Intent(context, DetailsActivity.class);
         intent.putExtra("TotalDistance", totalDistance);

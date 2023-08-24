@@ -28,7 +28,8 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="100px"
-        android:id="@+id/profileName"/>
+        android:id="@+id/profileName"
+        android:text="Jenish Maharjan"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -38,7 +39,8 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="100px"
-        android:id="@+id/profileAddress"/>
+        android:id="@+id/profileAddress"
+        android:text="Dhalko, Chettrapati"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -48,7 +50,8 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="100px"
-        android:id="@+id/profileEmail"/>
+        android:id="@+id/profileEmail"
+        android:text="jenishmhr1maharjan@gmail.com"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -58,7 +61,8 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="100px"
-        android:id="@+id/profileContact"/>
+        android:id="@+id/profileContact"
+        android:text="9843094222"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -68,6 +72,15 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="100px"
-        android:id="@+id/profileUserName"/>
+        android:id="@+id/profileUserName"
+        android:text="sinnnez"/>
+
+    <Button
+        android:id="@+id/profileToHome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back To Homepage"
+        android:layout_gravity="center"
+        android:shadowColor="@color/cardview_shadow_end_color"/>
 
 </LinearLayout>

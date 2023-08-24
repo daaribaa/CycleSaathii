@@ -10,7 +10,7 @@ import android.widget.ImageView;
 
 public class HomePageActivity extends AppCompatActivity {
 
-    Button btnRecord, profileBtn, aboutUsBtn, kehiBtn;
+    Button btnRecord, profileBtn, aboutUsBtn;
     ImageView ivLogo;
 
     @Override
